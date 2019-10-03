@@ -11,11 +11,13 @@ using System.Threading.Tasks;
 
 namespace AirBench.Controllers
 {
+    [Authorize]
     public class BenchesController : Controller
     {
-
+        
         IBenchRepository _repository = new BenchRepository();
         // GET: Benches
+        [AllowAnonymous]
         async public Task<ActionResult> Index()
         {
             List<Bench> benches = await _repository.GetBenchListAsync();
@@ -23,6 +25,7 @@ namespace AirBench.Controllers
         }
 
         // GET: Benches/Details/5
+        [AllowAnonymous]
         async public Task<ActionResult> Details(int? id)
         {
             if (id == null)

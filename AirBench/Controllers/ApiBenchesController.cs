@@ -23,11 +23,13 @@ namespace AirBench.Controllers
             _repository = repository;
         }
 
-        [Route("api/bench/create")]
-        async public Task<Bench> Post(BenchCreateRequest bcr)
-        {
-            return await _repository.AddBenchAsync(0, bcr.Longitude, bcr.Latitude, bcr.Name);
-        }
+        //[Route("api/bench/create")]
+        //async public Task<Bench> Post(BenchCreateRequest bcr)
+        //{
+            
+
+        //    return await _repository.AddBenchAsync(0, bcr.Seats, bcr.Longitude, bcr.Latitude, bcr.Name, bcr.CreatorId);
+        //}
 
         [Route("api/bench/all")]
         async public Task<List<Bench>> Get()
@@ -41,11 +43,11 @@ namespace AirBench.Controllers
             return await _repository.GetBenchSingleAsync(benchId);
         }
 
-        [Route("api/bench/{benchId}/addcomment")]
-        async public Task<Comment> Post(int benchId, CommentAddRequest car)
-        {
-            return await _repository.AddCommentAsync(benchId, car.Text, car.Rating);
-        }
+        //[Route("api/bench/{benchId}/addcomment")]
+        //async public Task<Comment> Post(int benchId, CommentAddRequest car)
+        //{
+        //    return await _repository.AddCommentAsync(benchId, car.Text, car.Rating);
+        //}
 
     }
 }

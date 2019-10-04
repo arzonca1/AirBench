@@ -14,5 +14,6 @@ namespace AirBench.Data
         public int BenchId { get; set; }
         public Bench Bench { get; set; }
         public int Rating { get; set; }
+        public int UserId { get; set; }
     }
 }

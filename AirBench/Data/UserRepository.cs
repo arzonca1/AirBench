@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Data.Entity;
+using System.Text;
 
 namespace AirBench.Data
 {
@@ -17,7 +18,17 @@ namespace AirBench.Data
             }
         }
 
-        async public Task<User> RegisterUser(string email, string hashedpassword, string name)
+        async public Task<string> GetUserName(int id)
+        {
+            using(var context = new Context())
+            {
+                User user = await context.Users.SingleAsync(x => x.Id == id);
+                return user.FirstName + " " + user.LastName + ".";
+
+            }
+        }
+
+        async public Task<User> RegisterUser(string email, string hashedpassword, string firstName, string lastName)
         {
             using(var context = new Context())
             {
@@ -26,7 +37,8 @@ namespace AirBench.Data
                 User newUser = new User();
                 newUser.Email = email;
                 newUser.HashedPassword = hashedpassword;
-                newUser.Name = name;
+                newUser.FirstName = firstName;
+                newUser.LastName = lastName; 
 
                 context.Users.Add(newUser);
 

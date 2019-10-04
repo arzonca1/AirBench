@@ -14,7 +14,8 @@ namespace AirBench.Data
             using(var context = new Context())
             {
                 return await context.Benches
-                    .Include(x => x.Comments) //will need this to calculate rating 
+                    .Include(x => x.Comments)
+                    .Include(x => x.Creator) //will need this to calculate rating 
                     .ToListAsync();
             }
         }
@@ -25,21 +26,25 @@ namespace AirBench.Data
             {
                 Bench bench = await context.Benches
                     .Include(x => x.Comments)
+                    .Include(x => x.Creator)
                     .SingleAsync(x => x.Id == id);
 
                 return bench;
             }
         }
 
-        async public Task<Bench> AddBenchAsync(int id, decimal longitude, decimal latitude, string name)
+        async public Task<Bench> AddBenchAsync(int id, int seats, decimal longitude, decimal latitude, string name, int creatorId, string description)
         {
             using (var context = new Context())
             {
                 Bench bench = new Bench();
                 bench.Id = id;
+                bench.Seats = seats; 
                 bench.Longitude = longitude;
                 bench.Latitude = latitude;
                 bench.Name = name;
+                bench.CreatorId = creatorId;
+                bench.Description = description;
 
                 context.Benches.Add(bench);
 
@@ -48,11 +53,12 @@ namespace AirBench.Data
             }
         }
 
-        async public Task<Comment> AddCommentAsync(int benchId, string text, int rating)
+        async public Task<Comment> AddCommentAsync(int benchId, string text, int rating, int userId)
         {
             Comment comment = new Comment();
             comment.Text = text;
-            comment.Rating = rating; 
+            comment.Rating = rating;
+            comment.UserId = userId;
             using(var context = new Context())
             {
                 Bench bench = await context.Benches.Include(x => x.Comments).SingleAsync(x => x.Id == benchId);

@@ -94,18 +94,22 @@ namespace AirBench.Controllers
                 {
                     ModelState.AddModelError("", "This email is invalid");
                 }
-                if (string.IsNullOrWhiteSpace(formModel.Name))
+                if (string.IsNullOrWhiteSpace(formModel.FirstName))
                 {
                     ModelState.AddModelError("", "Name can't be empty");
                 }
-              
+                if (string.IsNullOrWhiteSpace(formModel.LastName))
+                {
+                    ModelState.AddModelError("", "Name can't be empty");
+                }
+
             }
 
             if (ModelState.IsValid)
             {
                 //create new user 
 
-                User user = await _repository.RegisterUser(formModel.Email, BCrypt.Net.BCrypt.HashPassword(formModel.Password, 12), formModel.Name);
+                User user = await _repository.RegisterUser(formModel.Email, BCrypt.Net.BCrypt.HashPassword(formModel.Password, 12), formModel.FirstName, formModel.LastName);
                 
 
                 // Login the new user.

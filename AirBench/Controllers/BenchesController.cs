@@ -16,6 +16,7 @@ namespace AirBench.Controllers
     {
         
         IBenchRepository _repository = new BenchRepository();
+        IUserRepository iur = new UserRepository();
         // GET: Benches
         [AllowAnonymous]
         async public Task<ActionResult> Index()
@@ -51,11 +52,12 @@ namespace AirBench.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        async public Task<ActionResult> Create([Bind(Include = "Id,Name,Longitude,Latitude")] Bench bench)
+        async public Task<ActionResult> Create([Bind(Include = "Id,Name,Seats,Longitude,Latitude,Description")] Bench bench)
         {
             if (ModelState.IsValid)
             {
-                await _repository.AddBenchAsync(0, bench.Longitude, bench.Latitude, bench.Name);
+                User user = await iur.GetUser(User.Identity.Name);
+                await _repository.AddBenchAsync(0, bench.Seats, bench.Longitude, bench.Latitude, bench.Name, user.Id, bench.Description);
                 return RedirectToAction("Index");
             }
 

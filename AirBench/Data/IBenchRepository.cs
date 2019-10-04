@@ -10,8 +10,8 @@ namespace AirBench.Data
     {
         Task<List<Bench>> GetBenchListAsync();
         Task<Bench> GetBenchSingleAsync(int id);
-        Task<Bench> AddBenchAsync(int id, decimal longitude, decimal latitude, string name);
-        Task<Comment> AddCommentAsync(int benchId, string text, int rating);
+        Task<Bench> AddBenchAsync(int id, int seats, decimal longitude, decimal latitude, string name, int creatorId, string description);
+        Task<Comment> AddCommentAsync(int benchId, string text, int rating, int authorId);
 
     }
 }

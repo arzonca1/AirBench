@@ -54,6 +54,27 @@ namespace AirBench.Controllers
         [ValidateAntiForgeryToken]
         async public Task<ActionResult> Create([Bind(Include = "Id,Name,Seats,Longitude,Latitude,Description")] Bench bench)
         {
+            if (string.IsNullOrWhiteSpace(bench.Name))
+            {
+                ModelState.AddModelError("", "Name can't be empty");
+            }
+            if (bench.Seats < 1)
+            {
+                ModelState.AddModelError("", "Seats has to be at least 1");
+            }
+            if (bench.Longitude > -180 || bench.Longitude > 180)
+            {
+                ModelState.AddModelError("", "Longitude has to be between -180 and 180");
+            }
+            if (bench.Latitude < -90 || bench.Latitude > 90)
+            {
+                ModelState.AddModelError("", "Latitude has to be between -90 and 90");
+            }
+            if (string.IsNullOrWhiteSpace(bench.Description))
+            {
+                ModelState.AddModelError("", "Description can't be empty");
+            }
+
             if (ModelState.IsValid)
             {
                 User user = await iur.GetUser(User.Identity.Name);
@@ -63,7 +84,34 @@ namespace AirBench.Controllers
 
             return View(bench);
         }
+        async public Task<ActionResult> Comment(int id)
+        {
+            Comment comment = new Comment(); 
+            return View("Comment", comment);
+        }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        async public Task<ActionResult> Comment(int id, [Bind(Include ="Id,Text,Rating,UserId")] Comment comment)
+        {
+            if (string.IsNullOrWhiteSpace(comment.Text))
+            {
+                ModelState.AddModelError("", "Text can't be empty");
+            }
+            if(comment.Rating < 1 || comment.Rating > 5)
+            {
+                ModelState.AddModelError("", "Rating has to be between 1 and 5 stars");
+            }
+            if (ModelState.IsValid)
+            {
+                User user = await iur.GetUser(User.Identity.Name);
+                await _repository.AddCommentAsync(id, comment.Text, comment.Rating, user.Id);
+                return RedirectToAction("Details", new {id=id});
+            }
+            
+            return View("Comment");
+        }
+            
         // GET: Benches/Edit/5
         //public ActionResult Edit(int? id)
         //{

@@ -15,5 +15,8 @@ namespace AirBench.Data
         public Bench Bench { get; set; }
         public int Rating { get; set; }
         public int UserId { get; set; }
+        public User User { get; set; }
+        public string CreatedBy => User.FirstName + " " + User.LastName[0] + ".";
+        public DateTimeOffset CreatedOn { get; set; }
     }
 }

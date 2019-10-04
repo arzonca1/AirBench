@@ -45,18 +45,40 @@
             @Html.DisplayNameFor(model => model.RatingAverage)
         </dt>
 
+
+        
+            @if (Model.RatingAverage == 0)
+            {
+                <dd>Not Rated</dd>
+            }
+            else
+            {
+                <dd>@Html.DisplayFor(model => model.RatingAverage)</dd>
+            }
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
         <dd>
-            @Html.DisplayFor(model => model.RatingAverage)
+            @Html.DisplayFor(model => model.Description)
         </dd>
         </dl>
         Comments: 
-        <table class="table">
+        @if (Model.Comments.Count > 0)
+        {
+            <table class="table">
             <tr>
                 <th>
                     Rating
                 </th>
                 <th>
                     Comment
+                </th>
+                <th>
+                    Created on:
+                </th>
+                <th>
+                    Created by: 
                 </th>
             </tr>
 
@@ -69,12 +91,21 @@
                     <td>
                         @Html.DisplayFor(modelItem => item.Text)
                     </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CreatedOn)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CreatedBy)
+                    </td>
                 </tr>
             }
             </table>
-
+        }else
+        {
+            <p>No comments yet</p>
+        }
 </div>
 <p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Add Comment", "Comment", new { id = Model.Id }) |
     @Html.ActionLink("Back to List", "Index")
 </p>

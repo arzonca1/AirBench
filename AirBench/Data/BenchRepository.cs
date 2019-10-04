@@ -29,6 +29,7 @@ namespace AirBench.Data
                     .Include(x => x.Creator)
                     .SingleAsync(x => x.Id == id);
 
+
                 return bench;
             }
         }
@@ -59,6 +60,7 @@ namespace AirBench.Data
             comment.Text = text;
             comment.Rating = rating;
             comment.UserId = userId;
+            comment.CreatedOn = DateTimeOffset.Now;
             using(var context = new Context())
             {
                 Bench bench = await context.Benches.Include(x => x.Comments).SingleAsync(x => x.Id == benchId);
@@ -70,5 +72,6 @@ namespace AirBench.Data
             }
 
         }
+
     }
 }

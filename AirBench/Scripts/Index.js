@@ -1,12 +1,70 @@
 ﻿(async () => {
 
     var benchesfull = await getBenches(); //we only fetch the full list once, store it in memory and handle all filtering from this copy
-    var benches = benchesfull; //this is the working copy 
+    var benches = benchesfull; //this is the working copy, what the user will see
     var map;
     var vectorLayer;
     var controls;
     function drawMap() {
         map = new OpenLayers.Map("map");
+
+        ////// untested code 
+
+
+        OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
+            defaultHandlerOptions: {
+                'single': true,
+                'double': false,
+                'pixelTolerance': 0,
+                'stopSingle': false,
+                'stopDouble': false
+            },
+
+            initialize: function (options) {
+                this.handlerOptions = OpenLayers.Util.extend(
+                    {}, this.defaultHandlerOptions
+                );
+                OpenLayers.Control.prototype.initialize.apply(
+                    this, arguments
+                );
+                this.handler = new OpenLayers.Handler.Click(
+                    this, {
+                    'click': this.trigger
+                }, this.handlerOptions
+                );
+            },
+
+            trigger: function (e) {
+                //A click happened!
+                var lonlat = map.getLonLatFromViewPortPx(e.xy)
+
+                lonlat.transform(
+                    new OpenLayers.Projection("EPSG:900913"),
+                    new OpenLayers.Projection("EPSG:4326")
+                );
+
+                //alert(lonlat.lat + " " + lonlat.lon);
+                document.cookie = "lat=" + lonlat.lat + ";path=/";
+                document.cookie = "lon=" + lonlat.lon + ";path=/";
+                window.location.replace("/benches/create");
+                    //lonlat.lat 
+                    // lonlat.lon 
+            }
+
+        });
+
+        var click = new OpenLayers.Control.Click();
+        map.addControl(click);
+        click.activate();
+
+        //////
+
+
+
+
+
+
+
         map.addLayer(new OpenLayers.Layer.OSM());
 
         epsg4326 = new OpenLayers.Projection("EPSG:4326"); //WGS 1984 projection
@@ -15,7 +73,7 @@
         var lonLat = new OpenLayers.LonLat(0, 0).transform(epsg4326, projectTo);
 
 
-        var zoom = 14;
+        var zoom = 1;
         map.setCenter(lonLat, zoom);
         console.log("Loaded map");
 
@@ -25,8 +83,8 @@
             var long = parseInt(bench.Latitude);
             var lat = parseInt(bench.Longitude);
             var feature = new OpenLayers.Feature.Vector(
-                new OpenLayers.Geometry.Point(long, lat).transform(epsg4326, projectTo),
-                { description: bench.Name + "<br /> Seats:" + bench.Seats + "<br />" + bench.Description + '<br /> <a href="Benches/Details/' + bench.Id + '" > Details</a > ' },
+                new OpenLayers.Geometry.Point(lat, long).transform(epsg4326, projectTo),
+                { description: bench.Name + "<br /> Seats:" + bench.Seats + "<br />" + bench.Description + '<br /> <a href="/benches/Details/' + bench.Id + '" > Details</a > ' },
                 { externalGraphic: '/img/marker.png', graphicHeight: 25, graphicWidth: 21, graphicXOffset: -12, graphicYOffset: -25 }
             );
             console.log(feature);

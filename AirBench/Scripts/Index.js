@@ -53,11 +53,11 @@
 
         for (var i = 0; i < benches.length; i++) {
             var bench = benches[i]; 
-            console.log(bench);
-            console.log(bench.Seats);
+            var long = parseInt(bench.Latitude);
+            var lat = parseInt(bench.Longitude);
             var feature = new OpenLayers.Feature.Vector(
-                new OpenLayers.Geometry.Point(0,0).transform(epsg4326, projectTo),
-                { description: bench.Name + "<br /> Seats:" + bench.Seats + "<br />" + bench.Description + '< br /> <a href="~/Benches/Details/' + bench.Id + '" > Details</a > ' },
+                new OpenLayers.Geometry.Point(long, lat).transform(epsg4326, projectTo),
+                { description: bench.Name + "<br /> Seats:" + bench.Seats + "<br />" + bench.Description + '<br /> <a href="Benches/Details/' + bench.Id + '" > Details</a > ' },
                 { externalGraphic: '/img/marker.png', graphicHeight: 25, graphicWidth: 21, graphicXOffset: -12, graphicYOffset: -25 }
             );
             console.log(feature);

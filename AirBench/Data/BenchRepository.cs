@@ -13,10 +13,22 @@ namespace AirBench.Data
         {
             using(var context = new Context())
             {
-                return await context.Benches
+                List<Bench> benches = await context.Benches
                     .Include(x => x.Comments)
                     .Include(x => x.Creator) //will need this to calculate rating 
                     .ToListAsync();
+
+                foreach(var bench in benches)
+                {
+                    bench.Creator.Email = string.Empty;
+                    bench.Creator.HashedPassword = string.Empty; 
+                    bench.Creator.LastName = bench.Creator.LastName.Substring(0, 1);
+                    //added to hide personal information of users
+                    //a bit of processing overhead but we do not want to send a list of hashes and emails out into the wild
+
+                }
+                return benches;
+
             }
         }
 
@@ -29,6 +41,9 @@ namespace AirBench.Data
                     .Include(x => x.Creator)
                     .SingleAsync(x => x.Id == id);
 
+                bench.Creator.Email = string.Empty;
+                bench.Creator.HashedPassword = string.Empty; //added to hide personal information of users
+                bench.Creator.LastName = bench.Creator.LastName.Substring(0, 1);
 
                 return bench;
             }

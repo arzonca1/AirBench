@@ -23,6 +23,10 @@ namespace AirBench.Controllers
             _repository = repository;
         }
 
+        public ApiBenchesController()
+        {
+            _repository = new BenchRepository(); 
+        }
         //[Route("api/bench/create")]
         //async public Task<Bench> Post(BenchCreateRequest bcr)
         //{

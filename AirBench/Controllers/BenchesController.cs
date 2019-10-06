@@ -62,7 +62,7 @@ namespace AirBench.Controllers
             {
                 ModelState.AddModelError("", "Seats has to be at least 1");
             }
-            if (bench.Longitude > -180 || bench.Longitude > 180)
+            if (bench.Longitude < -180 || bench.Longitude > 180)
             {
                 ModelState.AddModelError("", "Longitude has to be between -180 and 180");
             }

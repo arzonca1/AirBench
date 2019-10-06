@@ -1,58 +1,27 @@
 ﻿(async () => {
-    //var map = new OpenLayers.Map({
-    //    target: 'map',
-    //    layers: [
-    //        new OpenLayers.layer.Tile({
-    //            source: new ol.source.OSM()
-    //        })
-    //    ],
-    //    view: new OpenLayers.View({
-    //        center: ol.proj.fromLonLat([-73.925220, 40.755252]),
-    //        zoom: 8
-    //    })
-    //});
 
-    var map = new OpenLayers.Map("map");
-    map.addLayer(new OpenLayers.Layer.OSM());
+    var benchesfull = await getBenches(); //we only fetch the full list once, store it in memory and handle all filtering from this copy
+    var benches = benchesfull; //this is the working copy 
+    var map;
+    var vectorLayer;
+    var controls;
+    function drawMap() {
+        map = new OpenLayers.Map("map");
+        map.addLayer(new OpenLayers.Layer.OSM());
 
-    epsg4326 = new OpenLayers.Projection("EPSG:4326"); //WGS 1984 projection
-    projectTo = map.getProjectionObject(); //The map projection (Spherical Mercator)
+        epsg4326 = new OpenLayers.Projection("EPSG:4326"); //WGS 1984 projection
+        projectTo = map.getProjectionObject(); //The map projection (Spherical Mercator)
 
-    var lonLat = new OpenLayers.LonLat(0,0).transform(epsg4326, projectTo);
+        var lonLat = new OpenLayers.LonLat(0, 0).transform(epsg4326, projectTo);
 
 
-    var zoom = 14;
-    map.setCenter(lonLat, zoom);
+        var zoom = 14;
+        map.setCenter(lonLat, zoom);
+        console.log("Loaded map");
 
-
-    console.log("Loaded map");
-
-    async function getBenches() {
-        return await fetch("/api/bench/all");
-    }
-
-    //function add_map_point(lat, lng) {
-    //    vectorLayer = new ol.layer.Vector({
-    //        source: new ol.source.Vector({
-    //            features: [new ol.Feature({
-    //                geometry: new ol.geom.Point(ol.proj.transform([parseFloat(lng), parseFloat(lat)], 'EPSG:4326', 'EPSG:3857')),
-    //            })]
-    //        }),
-    //        style: new ol.style.Style({
-    //            image: new ol.style.Icon({
-    //                anchor: [0.5, 0.5],
-    //                anchorXUnits: "fraction",
-    //                anchorYUnits: "fraction",
-    //                src: "https://upload.wikimedia.org/wikipedia/commons/e/ec/RedDot.svg"
-    //            })
-    //        })
-    //    });
-    //}
-    var vectorLayer = new OpenLayers.Layer.Vector("Overlay");
-    function addBenches(benches) {
-
+        vectorLayer = new OpenLayers.Layer.Vector("Overlay");
         for (var i = 0; i < benches.length; i++) {
-            var bench = benches[i]; 
+            var bench = benches[i];
             var long = parseInt(bench.Latitude);
             var lat = parseInt(bench.Longitude);
             var feature = new OpenLayers.Feature.Vector(
@@ -65,12 +34,12 @@
         }
         map.addLayer(vectorLayer);
         console.log("Added marker layer");
+        controls = {
+            selector: new OpenLayers.Control.SelectFeature(vectorLayer, { onSelect: createPopup, onUnselect: destroyPopup })
+        };
+        map.addControl(controls['selector']);
+        controls['selector'].activate();
     }
-
-    var controls = {
-        selector: new OpenLayers.Control.SelectFeature(vectorLayer, { onSelect: createPopup, onUnselect: destroyPopup })
-    };
-
     function createPopup(feature) {
         feature.popup = new OpenLayers.Popup.FramedCloud("pop",
             feature.geometry.getBounds().getCenterLonLat(),
@@ -89,38 +58,84 @@
         feature.popup = null;
     }
 
-    map.addControl(controls['selector']);
-    controls['selector'].activate();
+    async function getBenches(){
+        var response = await fetch("/api/bench/all");
+        return await response.json();
+    }
+    function populateList() {
+        var table = document.getElementById("table");
+        var header = "";
+        header += "<tr>";
+        header += "<th>Name</th>";
+        header += "<th>Seats</th>";
+        header += "<th>Description</th>";
+        header += "<th>Longitude</th>";
+        header += "<th>Latitude</th>";
+        header += "<th>Rating Average</th>";
+        header += "<th>Added by</th>";
+        header += "<th></th></tr>";
+        var benchList = "";
+        if (benches.length == 0) benchList = "<p>No benches found</p>";
 
-    let response = await getBenches();
-    console.log(response);
-    let benches = await response.json();
-    console.log(benches);
-    console.log(benches[0]);
-    console.log(benches[0].Seats);
+        for (var i = 0; i < benches.length; i++) { // just an ugly for loop to spit out all of this as html
+            bench = benches[i];
+            benchList += "<tr>";
+            benchList += "<td>" + bench.Name + "</td>";
+            benchList += "<td>" + bench.Seats + "</td>";
+            var description = bench.Description.split(" ");
+            if (description.length <= 10) {
+                benchList += "<td>" + bench.Description + "</td>";
+            }
+            else {
+                var temp = "<td>";
+                for (var j = 0; j < 10; j++) { // another ugly for loop if the description is longer than 10 words
+                    temp += description[j] + " ";
+                }
+                temp += "... </td>";
+                benchList += temp;
+            }
+            benchList += "<td>" + bench.Longitude + "</td>";
+            benchList += "<td>" + bench.Latitude + "</td>";
+            if (bench.RatingAverage === 0) {
+                benchList += "<td>No ratings</td>";
+            }
+            else {
+                var ratingAverage = Math.round(parseFloat(bench.RatingAverage) * 10) / 10 + "";
+                if (ratingAverage.length == 1) ratingAverage += ".0";
+                benchList += "<td>" + ratingAverage + "</td>";
+            }
+            benchList += "<td>" + bench.CreatorName + "</td>";
+            benchList += '<td><a href="/benches/details/' + bench.Id + '"> Details </a></td>';
+            benchList += "</tr>";
+        }
 
-    addBenches(benches); 
-    //let response = await getBenches();
-    //let json = await response.json();
-    //let benches = await json.Benches(); 
+        table.innerHTML = header + benchList;
+    }
 
-    //function addBenches() {
-    //    var vectorLayer = new ol.layer.Vector({
-    //        source: new ol.source.Vector({
-    //            features: [new ol.Feature({
-    //                geometry: new ol.geom.Point(ol.proj.transform([parseFloat(lng), parseFloat(lat)], 'EPSG:4326', 'EPSG:3857')),
-    //            })]
-    //        }),
-    //        style: new ol.style.Style({
-    //            image: new ol.style.Icon({
-    //                anchor: [0.5, 0.5],
-    //                anchorXUnits: "fraction",
-    //                anchorYUnits: "fraction",
-    //                src: "https://upload.wikimedia.org/wikipedia/commons/e/ec/RedDot.svg"
-    //            })
-    //        })
-    //    });
-    //    map.addLayer(vectorLayer);
-    //}
+    drawMap();
+    populateList();
+    document.getElementById("filter").addEventListener("click", filterList);
+
+    function filterList() {
+        var result = [];
+        var min = parseInt(document.getElementById("min").value);
+        var max = parseInt(document.getElementById("max").value);
+        for (var i = 0; i < benchesfull.length; i++) {
+            var bench = benchesfull[i];
+            if (bench.Seats >= min && bench.Seats <= max) {
+                result.push(bench);
+            }
+        }
+        console.log(result);
+        benches = result;
+        document.getElementById("map").innerHTML = ""; //throw out old map and list
+        drawMap();
+        document.getElementById("table").innerHTML = "";
+        populateList();
+    }
+
+
+
+
 
 })();

@@ -8,8 +8,6 @@
     function drawMap() {
         map = new OpenLayers.Map("map");
 
-        ////// untested code 
-
 
         OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
             defaultHandlerOptions: {
@@ -43,12 +41,11 @@
                     new OpenLayers.Projection("EPSG:4326")
                 );
 
-                //alert(lonlat.lat + " " + lonlat.lon);
+
                 document.cookie = "lat=" + lonlat.lat + ";path=/";
                 document.cookie = "lon=" + lonlat.lon + ";path=/";
                 window.location.replace("/benches/create");
-                    //lonlat.lat 
-                    // lonlat.lon 
+
             }
 
         });
@@ -57,7 +54,7 @@
         map.addControl(click);
         click.activate();
 
-        //////
+
 
 
 

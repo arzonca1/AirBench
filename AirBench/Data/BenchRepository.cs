@@ -14,8 +14,8 @@ namespace AirBench.Data
             using(var context = new Context())
             {
                 List<Bench> benches = await context.Benches
-                    .Include(x => x.Comments)
-                    .Include(x => x.Creator) //will need this to calculate rating 
+                    .Include(x => x.Comments)//will need this to calculate rating
+                    .Include(x => x.Creator) 
                     .ToListAsync();
 
                 foreach(var bench in benches)
@@ -44,7 +44,9 @@ namespace AirBench.Data
                 bench.Creator.Email = string.Empty;
                 bench.Creator.HashedPassword = string.Empty; //added to hide personal information of users
                 bench.Creator.LastName = bench.Creator.LastName.Substring(0, 1);
-
+                
+                bench.Comments = bench.Comments.OrderByDescending(c=>c.CreatedOn).ToList();
+                
                 return bench;
             }
         }

@@ -47,7 +47,7 @@
             </span>
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.RatingAverage)
+            Rating Average:
         </dt>
 
 
@@ -58,7 +58,7 @@
         }
         else
         {
-            <dd>@Html.DisplayFor(model => model.RatingAverage)</dd>
+            <dd>@decimal.Round(Model.RatingAverage, 1)</dd>
         }
 
         <dt>

@@ -123,10 +123,12 @@ namespace AirBench.Controllers
 
         }
 
-        [HttpPost]
+        [HttpGet]
         public ActionResult Logout()
         {
-            return RedirectToAction("Login");
+            FormsAuthentication.SignOut();
+            Session.Abandon();
+            return RedirectToAction("Index","Benches","Index");
         }
     }
 

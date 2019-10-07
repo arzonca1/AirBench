@@ -41,7 +41,6 @@
                     new OpenLayers.Projection("EPSG:4326")
                 );
 
-
                 document.cookie = "lat=" + lonlat.lat + ";path=/";
                 document.cookie = "lon=" + lonlat.lon + ";path=/";
                 window.location.replace("/benches/create");

@@ -167,9 +167,7 @@
         table.innerHTML = header + benchList;
     }
 
-    drawMap();
-    populateList();
-    document.getElementById("filter").addEventListener("click", filterList);
+
 
     function filterList() {
         var result = [];
@@ -189,8 +187,18 @@
         populateList();
     }
 
+    function clearFilters() {
+        benches = benchesfull; // restore the full list as our view
+        document.getElementById("map").innerHTML = ""; //throw out old map and list
+        drawMap();
+        document.getElementById("table").innerHTML = "";
+        populateList();
+    }
 
-
+    drawMap();
+    populateList();
+    document.getElementById("filter").addEventListener("click", filterList);
+    document.getElementById("clear").addEventListener("click", clearFilters);
 
 
 })();

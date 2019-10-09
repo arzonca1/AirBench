@@ -6,6 +6,15 @@
     <title>@ViewBag.Title</title>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.0.1/css/ol.css" type="text/css">
+    <style>
+        .map {
+            height: 400px;
+            width: 100%;
+        }
+    </style>
+    <script src="http://www.openlayers.org/api/OpenLayers.js"></script>
+    <script src="~/Scripts/jquery-1.10.2.js"></script>
 </head>
 <body>
     <div class="navbar navbar-inverse navbar-fixed-top">
@@ -16,12 +25,19 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                @Html.ActionLink("Application name", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+                @Html.ActionLink("AirBench", "Index", "Benches", new { area = "" }, new { @class = "navbar-brand" })
             </div>
             <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li>@Html.ActionLink("Home", "Index", "Home", new { area = "" }, null)</li>
-                    <li>@Html.ActionLink("API", "Index", "Help", new { area = "" }, null)</li>
+                <ul class="nav navbar-nav navbar-right">
+                    @if (!Request.IsAuthenticated)
+                    {
+                        <li>@Html.ActionLink("Login", "Login", "Account", new { area = "" }, null)</li>
+                        <li>@Html.ActionLink("Register", "Register", "Account", new { area = "" }, null)</li>
+                    }
+                    @if (Request.IsAuthenticated) {
+                        <li>Hello, @User.Identity.Name</li>
+                        <li>@Html.ActionLink("Logout", "Logout", "Account", new { area = "" }, null)</li>
+                    }
                 </ul>
             </div>
         </div>

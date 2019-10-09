@@ -11,10 +11,11 @@ namespace AirBench
     {
         public static void RegisterComponents()
         {
+            
             var container = new UnityContainer();
-
+            container.RegisterType<IBenchRepository, BenchRepository>();
       // e.g. container.RegisterType<ITestService, TestService>();
-\
+
       DependencyResolver.SetResolver(new Mvc5Resolver(container));
             GlobalConfiguration.Configuration.DependencyResolver = new ApiResolver(container);
         }
